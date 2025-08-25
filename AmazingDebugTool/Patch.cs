@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace AmazingDebugTool
+namespace JITDebugTool
 {
     internal class Patch
     {
@@ -18,7 +18,7 @@ namespace AmazingDebugTool
         {
             __state.Item1.Stop();
 
-            Task.Run(() => Plugin.Instance.Writer.Write(__instance, __state.Item1, __originalMethod, [], __state.Item2));
+            Task.Run(() => Plugin.Instance.writer.Write(__instance, __state.Item1, __originalMethod, [], __state.Item2));
         }
     }
 }

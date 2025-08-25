@@ -1,43 +1,44 @@
 ﻿using Exiled.API.Enums;
 using Exiled.API.Features;
 using HarmonyLib;
+using JITDebugTool.API.Features;
 using System;
-using System.IO;
 
-namespace AmazingDebugTool
+namespace JITDebugTool
 {
     internal class Plugin : Plugin<Config>
     {
-        public override string Name => "AmazingDebugTool";
+        public override string Name => "JITDebugTool";
 
-        public override string Prefix => "adb";
+        public override string Prefix => "jit_debug_tool";
 
         public override string Author => "FoxWorn3365 & UCS Collective";
 
-        public override Version Version => new(1, 0, 0);
+        public override Version Version => new(0, 8, 0);
 
         public override PluginPriority Priority => PluginPriority.First;
 
-        internal static Plugin Instance;
+        internal static Plugin Instance { get; private set; }
 
-        internal Writer Writer;
+        internal Writer writer;
+
+        internal Patcher patcher;
 
         private Harmony _harmony;
-
-        private Patcher _patcher;
 
         public override void OnEnabled()
         {
             Instance = this;
-            Writer = new(Path.Combine(Paths.Configs, $"adt-log-{DateTime.Now:F}.txt".Replace("/", "-").Replace(" ", "-").Replace(":", "-")));
-            Writer.Start();
+            writer = new();
+            writer.Start();
+            new SocketServer();
 
             _harmony = new($"adb-{Guid.NewGuid()}");
 
-            _patcher = new(_harmony);
-            _patcher.PatchMethods();
+            patcher = new(_harmony);
+            patcher.PatchMethods();
 
-            Log.Info("Welcome on AmazingDebugTool!");
+            Log.Info("Welcome on JITDebugTool!");
 
             base.OnEnabled();
         }

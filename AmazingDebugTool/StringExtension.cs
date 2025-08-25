@@ -1,4 +1,4 @@
-﻿namespace AmazingDebugTool
+﻿namespace JITDebugTool
 {
     internal static class StringExtension
     {

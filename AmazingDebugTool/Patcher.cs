@@ -1,5 +1,4 @@
-﻿using CommandSystem;
-using Exiled.API.Features;
+﻿using Exiled.API.Features;
 using Exiled.API.Interfaces;
 using Exiled.Loader;
 using HarmonyLib;
@@ -8,13 +7,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace AmazingDebugTool
+namespace JITDebugTool
 {
     internal class Patcher
     {
         public readonly Assembly targetAssembly;
 
         public readonly IReadOnlyList<Type> types;
+
+        public readonly IPlugin<IConfig> plugin;
 
         private readonly Harmony _harmony;
 
@@ -25,7 +26,7 @@ namespace AmazingDebugTool
 
         public Patcher(Harmony harmony)
         {
-            IPlugin<IConfig> plugin = Loader.GetPlugin(Plugin.Instance.Config.Plugin);
+            plugin = Loader.GetPlugin(Plugin.Instance.Config.Plugin);
 
             if (plugin is null)
             {

@@ -27,7 +27,7 @@ namespace JITDebugTool.API.SerializedElements
         public SerializedCallEntry(CallEntry entry)
         {
             Method = new(entry.Method);
-            Assembly = entry.Object.GetType().Assembly.FullName;
+            Assembly = entry.Object?.GetType().Assembly.FullName ?? Method.TypeAssembly;
             StackTrace = SerializeStackTrace(entry.StackTrace);
             Stopwatch = new(entry.Stopwatch, entry.Time);
 

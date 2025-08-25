@@ -14,7 +14,9 @@ namespace JITDebugTool
 #pragma warning disable CS4014
     internal class Writer()
     {
-        private readonly ConcurrentQueue<CallEntry> _builder = new();
+        internal readonly ConcurrentQueue<CallEntry> fullLogs = [];
+
+        private readonly ConcurrentQueue<CallEntry> _builder = [];
 
         public void Start()
         {
@@ -25,7 +27,9 @@ namespace JITDebugTool
         {
             try
             {
-                _builder.Enqueue(new(method, stopwatch, stackTrace, obj));
+                CallEntry entry = new(method, stopwatch, stackTrace, obj);
+                _builder.Enqueue(entry);
+                fullLogs.Enqueue(entry);
             }
             catch (Exception ex)
             {

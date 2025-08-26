@@ -69,6 +69,7 @@
     <Compile Include="API\SerializedElements\SerializedCallEntry.cs" />
     <Compile Include="API\SerializedElements\SerializedMethod.cs" />
     <Compile Include="API\SerializedElements\SerializedParamInfo.cs" />
+    <Compile Include="API\SerializedElements\SerializedPluginData.cs" />
     <Compile Include="API\SerializedElements\SerializedStackTraceEntry.cs" />
     <Compile Include="API\SerializedElements\SerializedStopwatch.cs" />
     <Compile Include="API\SerializedElements\SerializedTargetPlugin.cs" />

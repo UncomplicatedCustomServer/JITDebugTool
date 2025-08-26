@@ -1,5 +1,4 @@
-﻿using Exiled.API.Features;
-using JITDebugTool.API.Features;
+﻿using JITDebugTool.API.Features;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json;
 using System.Collections.Generic;
@@ -10,6 +9,8 @@ namespace JITDebugTool.API.SerializedElements
 {
     internal class SerializedCallEntry
     {
+        public string Id { get; }
+
         public SerializedMethod Method { get; }
 
         public string Assembly { get; }
@@ -24,18 +25,23 @@ namespace JITDebugTool.API.SerializedElements
 
         public double RamUsage { get; }
 
+        public long ExecutionTime { get; }
+
         public SerializedCallEntry(CallEntry entry)
         {
+            Id = entry.Id.ToString();
             Method = new(entry.Method);
             Assembly = entry.Object?.GetType().Assembly.FullName ?? Method.TypeAssembly;
             StackTrace = SerializeStackTrace(entry.StackTrace);
-            Stopwatch = new(entry.Stopwatch, entry.Time);
+            Stopwatch = new(entry.Stopwatch);
 
-            SpecificId = $"{Method.TypeFullName}#{Method.Name}({Method.RenderParameters()})";
-            GenericId = $"{Method.TypeFullName}#{Method.Name}";
+            SpecificId = $"{Method.FullType}#{Method.Name}({Method.RenderParameters()})";
+            GenericId = $"{Method.FullType}#{Method.Name}";
 
             Process process = Process.GetCurrentProcess();
             RamUsage = process.PrivateMemorySize64 / (1024.0 * 1024);
+
+            ExecutionTime = entry.Time.ToUnixTimeMilliseconds();
         }
 
         public static string Serialize(object obj)

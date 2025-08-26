@@ -4,7 +4,7 @@ namespace JITDebugTool.API.SerializedElements
 {
     internal class SerializedStackTraceEntry(StackFrame stackFrame)
     {
-        public SerializedMethod Caller { get; } = new(stackFrame.GetMethod());
+        public SerializedMethod Caller { get; } = new(stackFrame.GetMethod(), true);
 
         public string File { get; } = stackFrame.GetFileName();
 

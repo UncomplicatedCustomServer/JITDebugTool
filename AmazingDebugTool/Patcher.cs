@@ -2,6 +2,7 @@
 using Exiled.API.Interfaces;
 using Exiled.Loader;
 using HarmonyLib;
+using JITDebugTool.API.SerializedElements;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,8 @@ namespace JITDebugTool
         public readonly IReadOnlyList<Type> types;
 
         public readonly IPlugin<IConfig> plugin;
+
+        public SerializedPluginData pluginData = null;
 
         private readonly Harmony _harmony;
 
@@ -48,12 +51,15 @@ namespace JITDebugTool
 
         public void PatchMethods()
         {
+            pluginData = new([.. types.Select(t => t.FullName)], DateTimeOffset.Now.ToUnixTimeMilliseconds(), types.Count);
+
             foreach (Type type in types)
                 foreach (MethodInfo method in type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance | BindingFlags.DeclaredOnly).Where(m => !m.Name.StartsWith("get_") && !m.Name.StartsWith("set_")))
                     if (!Plugin.Instance.Config.IgnoreMethods.Contains(method.Name))
                         PatchMethod(method, type);
 
             Log.Info($"Successfully patched {types.Count} types and {PatchedMethods} methods!");
+            pluginData.TotalPatchedMethods = PatchedMethods;
         }
 
         private void PatchMethod(MethodInfo method, Type type)
@@ -68,12 +74,14 @@ namespace JITDebugTool
 
                 PatchedMethods++;
                 Log.Info($"Successfully patched method {type.FullName}::{method.Name}() !");
+                pluginData.Methods.Add(new(method));
             } catch (Exception e)
             {
+                pluginData.NotPatchedMethods.Add(new(method));
                 if (e.GetType() == typeof(NotSupportedException))
-                    Log.Warn($"Wont patch method {type.FullName}::{method.Name}() - not supported!");
+                    Log.Warn($"Wont patch method {type.FullName}{(method.IsStatic ? "::" : ".")}{method.Name}() - not supported!");
                 else
-                    Log.Error(e);
+                    Log.Error($"Wont patch method {type.FullName}{(method.IsStatic ? "::" : ".")}{method.Name}() - Generic exception:\n{e}");
             }
         }
     }

@@ -26,6 +26,7 @@ namespace JITDebugTool.API.Features
                     _isAuthed = true;
                     SendAsync($"WELCOME! {Plugin.Instance.Name} v{Plugin.Instance.Version}", delegate { });
                     SendAsync(SerializedCallEntry.Serialize(new SerializedWelcome()), delegate { });
+                    SendAsync(SerializedCallEntry.Serialize(Plugin.Instance.patcher.pluginData), delegate { });
                 } 
                 else
                 {

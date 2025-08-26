@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using JITDebugTool.API.SerializedElements;
 using System.Linq;
+using Utf8Json.Resolvers.Internal;
 
 namespace JITDebugTool
 {
@@ -23,13 +24,19 @@ namespace JITDebugTool
             Task.Run(Action);
         }
 
-        public void Write(object obj, Stopwatch stopwatch, MethodInfo method, object[] _, StackTrace stackTrace)
+        public CallEntry PreWrite()
+        {
+            CallEntry entry = new();
+            _builder.Enqueue(entry);
+            fullLogs.Enqueue(entry);
+            return entry;
+        }
+
+        public static void Write(CallEntry entry, object obj, Stopwatch stopwatch, MethodInfo method, StackTrace stackTrace)
         {
             try
             {
-                CallEntry entry = new(method, stopwatch, stackTrace, obj);
-                _builder.Enqueue(entry);
-                fullLogs.Enqueue(entry);
+                entry.Populate(method, stopwatch, stackTrace, obj);
             }
             catch (Exception ex)
             {
@@ -51,7 +58,7 @@ namespace JITDebugTool
                 {
                     List<CallEntry> elements = [];
 
-                    while (_builder.TryDequeue(out CallEntry entry) && elements.Count < 11)
+                    while (_builder.TryPeek(out CallEntry entry) && entry.IsReady && _builder.TryDequeue(out CallEntry _) && elements.Count < 11)
                         elements.Add(entry);
 
                     Task.Run(() =>

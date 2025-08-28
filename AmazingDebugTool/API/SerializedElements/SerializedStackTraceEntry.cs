@@ -1,19 +1,30 @@
-﻿using System.Diagnostics;
+﻿using JITDebugTool.API.Extensions;
+using System.Diagnostics;
 
 namespace JITDebugTool.API.SerializedElements
 {
-    internal class SerializedStackTraceEntry(StackFrame stackFrame)
+    internal class SerializedStackTraceEntry
     {
-        public SerializedMethod Caller { get; } = new(stackFrame.GetMethod(), true);
+        public SerializedMethod Caller { get; }
 
-        public string File { get; } = stackFrame.GetFileName();
+        public string File { get; }
 
-        public int Line { get; } = stackFrame.GetFileLineNumber();
+        public int Line { get; }
 
-        public int Column { get; } = stackFrame.GetFileColumnNumber();
+        public int Column { get; }
 
-        public int ILOffset { get; } = stackFrame.GetILOffset();
+        public int ILOffset { get; }
 
-        public int NativeOffset { get; } = stackFrame.GetNativeOffset();
+        public int NativeOffset { get; }
+
+        public SerializedStackTraceEntry(StackFrame frame)
+        {
+            if (Bucket.stackTraceMethodCache.TryGetValue(frame.GetMethod().GetSignature(), out SerializedMethod method))
+            File = frame.GetFileName();
+            Line = frame.GetFileLineNumber();
+            Column = frame.GetFileColumnNumber();
+            ILOffset = frame.GetILOffset();
+            NativeOffset = frame.GetNativeOffset();
+        }
     }
 }

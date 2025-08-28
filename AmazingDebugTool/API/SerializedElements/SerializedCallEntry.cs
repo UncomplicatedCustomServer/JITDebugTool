@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using JITDebugTool.API.Extensions;
 
 namespace JITDebugTool.API.SerializedElements
 {
@@ -11,7 +12,7 @@ namespace JITDebugTool.API.SerializedElements
     {
         public string Id { get; }
 
-        public SerializedMethod Method { get; }
+        public string Method { get; }
 
         public string Assembly { get; }
 
@@ -21,8 +22,6 @@ namespace JITDebugTool.API.SerializedElements
 
         public string SpecificId { get; }
 
-        public string GenericId { get; }
-
         public double RamUsage { get; }
 
         public long ExecutionTime { get; }
@@ -30,13 +29,12 @@ namespace JITDebugTool.API.SerializedElements
         public SerializedCallEntry(CallEntry entry)
         {
             Id = entry.Id.ToString();
-            Method = new(entry.Method);
-            Assembly = entry.Object?.GetType().Assembly.FullName ?? Method.TypeAssembly;
+            Method = entry.Method.GetSignature();
+            Assembly = entry.Object?.GetType().Assembly.FullName ?? entry.Method.DeclaringType.Assembly.FullName;
             StackTrace = SerializeStackTrace(entry.StackTrace);
             Stopwatch = new(entry.Stopwatch);
 
-            SpecificId = $"{Method.FullType}#{Method.Name}({Method.RenderParameters()})";
-            GenericId = $"{Method.FullType}#{Method.Name}";
+            SpecificId = Method;
 
             Process process = Process.GetCurrentProcess();
             RamUsage = process.PrivateMemorySize64 / (1024.0 * 1024);

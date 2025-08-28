@@ -1,6 +1,7 @@
 ﻿using JITDebugTool.API.SerializedElements;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using WebSocketSharp;
 using WebSocketSharp.Server;
@@ -44,16 +45,22 @@ namespace JITDebugTool.API.Features
                             try
                             {
                                 Queue<CallEntry> queue = new(Plugin.Instance.writer.fullLogs.ToArray());
+                                Queue<SerializedMethod> methods = new(Plugin.Instance.writer.fullMethods.Values.ToArray());
 
                                 Exiled.API.Features.Log.Info($"PREPPING LOGS AS {queue.Count}! ({Plugin.Instance.writer.fullLogs.Count})");
 
-                                while (queue.Count > 0)
+                                while (queue.Count > 0 || methods.Count > 0)
                                 {
                                     List<SerializedCallEntry> elements = [];
-                                    while (queue.TryDequeue(out CallEntry entry) && elements.Count < 15 && entry is not null)
+                                    List<SerializedMethod> _methods = [];
+
+                                    while (queue.TryDequeue(out CallEntry entry) && elements.Count < 30 && entry is not null)
                                         elements.Add(new(entry));
 
-                                    SendAsync(SerializedCallEntry.Serialize(elements), delegate { });
+                                    while (methods.TryDequeue(out SerializedMethod method) && _methods.Count < 150)
+                                        _methods.Add(method);
+
+                                    SendAsync(SerializedCallEntry.Serialize(new SerializedMessage(elements, _methods)), delegate { });
                                 }
                             }
                             catch (Exception ex)

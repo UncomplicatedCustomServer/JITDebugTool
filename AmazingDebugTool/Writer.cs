@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using JITDebugTool.API.SerializedElements;
 using System.Linq;
-using Utf8Json.Resolvers.Internal;
 
 namespace JITDebugTool
 {
@@ -16,6 +15,10 @@ namespace JITDebugTool
     internal class Writer()
     {
         internal readonly ConcurrentQueue<CallEntry> fullLogs = [];
+
+        internal readonly ConcurrentDictionary<string, SerializedMethod> fullMethods = [];
+
+        internal readonly ConcurrentQueue<SerializedMethod> _methods = [];
 
         private readonly ConcurrentQueue<CallEntry> _builder = [];
 
@@ -48,24 +51,26 @@ namespace JITDebugTool
         {
             while (!Round.IsEnded)
             {
-                if (!LogService.CanTransmit)
-                    goto rtx;
-
-                if (_builder.Count == 0)
+                if (_builder.Count == 0 && _methods.Count == 0)
                     goto rtx;
 
                 try
                 {
-                    List<CallEntry> elements = [];
+                    List<SerializedCallEntry> calls = [];
+                    List<SerializedMethod> methods = [];
 
-                    while (_builder.TryPeek(out CallEntry entry) && entry.IsReady && _builder.TryDequeue(out CallEntry _) && elements.Count < 11)
-                        elements.Add(entry);
+                    while (_builder.TryPeek(out CallEntry entry) && entry.IsReady && _builder.TryDequeue(out CallEntry _) && calls.Count < 11)
+                        calls.Add(new(entry));
+
+                    while (_methods.TryDequeue(out SerializedMethod method))
+                        methods.Add(method);
+
+                    if (calls.Count == 0 && methods.Count == 0)
+                        goto rtx;
 
                     Task.Run(() =>
                     {
-                        List<SerializedCallEntry> entries = [.. elements.Select<CallEntry, SerializedCallEntry>(e => new(e))];
-
-                        LogService.Broadcast(SerializedCallEntry.Serialize(entries));
+                        LogService.Broadcast(SerializedCallEntry.Serialize(new SerializedMessage(calls, methods)));
                     });
                 }
                 catch (Exception ex)

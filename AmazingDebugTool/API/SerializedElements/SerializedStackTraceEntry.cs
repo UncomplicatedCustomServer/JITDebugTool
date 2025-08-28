@@ -5,7 +5,7 @@ namespace JITDebugTool.API.SerializedElements
 {
     internal class SerializedStackTraceEntry
     {
-        public SerializedMethod Caller { get; }
+        public string Caller { get; }
 
         public string File { get; }
 
@@ -19,7 +19,14 @@ namespace JITDebugTool.API.SerializedElements
 
         public SerializedStackTraceEntry(StackFrame frame)
         {
-            if (Bucket.stackTraceMethodCache.TryGetValue(frame.GetMethod().GetSignature(), out SerializedMethod method))
+            Caller = frame.GetMethod().GetSignature();
+            if (!Plugin.Instance.writer.fullMethods.ContainsKey(Caller))
+            {
+                SerializedMethod method = new(frame.GetMethod(), true);
+                Plugin.Instance.writer._methods.Enqueue(method);
+                Plugin.Instance.writer.fullMethods[Caller] = method;
+            }
+
             File = frame.GetFileName();
             Line = frame.GetFileLineNumber();
             Column = frame.GetFileColumnNumber();

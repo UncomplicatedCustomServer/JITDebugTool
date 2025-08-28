@@ -14,8 +14,6 @@ namespace JITDebugTool.API.SerializedElements
 
         public string Method { get; }
 
-        public string Assembly { get; }
-
         public List<SerializedStackTraceEntry> StackTrace { get; }
 
         public SerializedStopwatch Stopwatch { get; }
@@ -30,7 +28,14 @@ namespace JITDebugTool.API.SerializedElements
         {
             Id = entry.Id.ToString();
             Method = entry.Method.GetSignature();
-            Assembly = entry.Object?.GetType().Assembly.FullName ?? entry.Method.DeclaringType.Assembly.FullName;
+
+            if (!Plugin.Instance.writer.fullMethods.ContainsKey(Method))
+            {
+                SerializedMethod method = new(entry.Method);
+                Plugin.Instance.writer._methods.Enqueue(method);
+                Plugin.Instance.writer.fullMethods[Method] = method;
+            }
+
             StackTrace = SerializeStackTrace(entry.StackTrace);
             Stopwatch = new(entry.Stopwatch);
 

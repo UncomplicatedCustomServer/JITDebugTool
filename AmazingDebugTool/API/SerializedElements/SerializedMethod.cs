@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using JITDebugTool.API.Extensions;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -11,6 +12,8 @@ namespace JITDebugTool.API.SerializedElements
         public string FullName { get; } = RenderFullName(methodInfo, isStackTrace);
 
         public bool IsStatic { get; } = methodInfo.IsStatic;
+
+        public string Signature { get; } = methodInfo.GetSignature();
 
         public List<SerializedParamInfo> Parameters { get; } = [.. methodInfo.GetParameters().Select(p => new SerializedParamInfo(p))];
 

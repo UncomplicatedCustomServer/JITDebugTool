@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using System;
 using System.Reflection;
+using JITDebugTool.API.Extensions;
 
 namespace JITDebugTool.API.SerializedElements
 {

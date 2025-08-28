@@ -63,12 +63,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="API\Bucket.cs" />
     <Compile Include="API\Extensions\MethodBaseExtension.cs" />
     <Compile Include="API\Features\CallEntry.cs" />
     <Compile Include="API\Features\LogService.cs" />
     <Compile Include="API\Features\SocketServer.cs" />
     <Compile Include="API\SerializedElements\SerializedCallEntry.cs" />
+    <Compile Include="API\SerializedElements\SerializedMessage.cs" />
     <Compile Include="API\SerializedElements\SerializedMethod.cs" />
     <Compile Include="API\SerializedElements\SerializedParamInfo.cs" />
     <Compile Include="API\SerializedElements\SerializedPluginData.cs" />

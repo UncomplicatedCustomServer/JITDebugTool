@@ -22,6 +22,8 @@ namespace JITDebugTool.API.SerializedElements
 
         public double RamUsage { get; }
 
+        public int ThreadId { get; }
+
         public long ExecutionTime { get; }
 
         public SerializedCallEntry(CallEntry entry)

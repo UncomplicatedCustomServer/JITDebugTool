@@ -18,15 +18,18 @@ namespace JITDebugTool.API.Features
 
         public DateTimeOffset Time { get; } = DateTimeOffset.Now;
 
+        public int ThreadId { get; private set; }
+
         public bool IsReady { get; private set; } = false;
 
-        internal void Populate(MethodInfo method, Stopwatch stopwatch, StackTrace stackTrace, object @object)
+        internal void Populate(MethodInfo method, Stopwatch stopwatch, StackTrace stackTrace, object @object, int threadId)
         {
             Method = method;
             Stopwatch = stopwatch;
             Object = @object;
             StackTrace = stackTrace;
             IsReady = true;
+            ThreadId = threadId;
         }
     }
 }

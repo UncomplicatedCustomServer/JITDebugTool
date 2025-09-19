@@ -76,6 +76,8 @@ namespace JITDebugTool.API.Features
                 }
                 else if (e.Data == "SUBSCRIBE")
                     _authed.Add(this);
+                else if (e.Data == "PING")
+                    SendAsync("PONG", delegate { });
             }
         }
 

@@ -7,7 +7,6 @@ using JITDebugTool.API.Features;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using JITDebugTool.API.SerializedElements;
-using System.Linq;
 
 namespace JITDebugTool
 {
@@ -35,11 +34,11 @@ namespace JITDebugTool
             return entry;
         }
 
-        public static void Write(CallEntry entry, object obj, Stopwatch stopwatch, MethodInfo method, StackTrace stackTrace)
+        public static void Write(CallEntry entry, object obj, Stopwatch stopwatch, MethodInfo method, StackTrace stackTrace, int threadId)
         {
             try
             {
-                entry.Populate(method, stopwatch, stackTrace, obj);
+                entry.Populate(method, stopwatch, stackTrace, obj, threadId);
             }
             catch (Exception ex)
             {

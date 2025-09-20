@@ -1,9 +1,7 @@
-﻿using Exiled.API.Features;
-using JITDebugTool.API.Features;
+﻿using JITDebugTool.API.Features;
 using System;
 using System.Diagnostics;
 using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace JITDebugTool
@@ -20,7 +18,8 @@ namespace JITDebugTool
         {
             __state.Item1.Stop();
 
-            int threadId = Thread.CurrentThread.ManagedThreadId;
+            int threadId = Task.CurrentId ?? 1;
+            //int threadId = Thread.CurrentThread.ManagedThreadId;
 
             Task.Run(() => Writer.Write(__state.Item3, __instance, __state.Item1, __originalMethod, __state.Item2, threadId));
         }

@@ -45,6 +45,7 @@ namespace JITDebugTool.API.SerializedElements
 
             Process process = Process.GetCurrentProcess();
             RamUsage = process.PrivateMemorySize64 / (1024.0 * 1024);
+            ThreadId = entry.ThreadId; 
 
             ExecutionTime = entry.Time.ToUnixTimeMilliseconds();
         }
